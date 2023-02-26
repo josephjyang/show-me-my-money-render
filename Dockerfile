@@ -1,9 +1,9 @@
 FROM node:12 AS build-stage
 
-WORKDIR /frontend-react
-COPY frontend-react/. .
+WORKDIR /react-app
+COPY react-app/. .
 
-ENV REACT_APP_BASE_URL=https://show-me-my-money.herokuapp.com/
+ENV REACT_APP_BASE_URL=https://show-me-my-money.onrender.com
 
 RUN npm install
 RUN npm run build
@@ -17,10 +17,10 @@ ENV SQLALCHEMY_ECHO=True
 EXPOSE 8000
 
 WORKDIR /var/www
-COPY backend-flask/ .
-COPY --from=build-stage /frontend-react/build/* app/static/
+COPY . .
+COPY --from=build-stage /react-app/build/* app/static/
 
 RUN pip install -r requirements.txt
 RUN pip install psycopg2
 
-CMD gunicorn --worker-class eventlet -w 1 app:app
+CMD gunicorn app:app
